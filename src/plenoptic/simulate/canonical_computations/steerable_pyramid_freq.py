@@ -28,11 +28,11 @@ KEYS_TYPE = tuple[int, int] | Literal["residual_lowpass", "residual_highpass"]
 class SteerablePyramidFreq(nn.Module):
     r"""Steerable frequency pyramid in Torch
 
-    Construct a steerable pyramid on matrix two dimensional signals, in the
-    Fourier domain. Boundary-handling is circular. Reconstruction is exact
-    (within floating point errors). However, if the image has an odd-shape,
-    the reconstruction will not be exact due to boundary-handling issues
-    that have not been resolved.
+    Construct a steerable pyramid on matrix two dimensional signals, in the Fourier
+    domain. Boundary-handling is circular. Reconstruction is exact (within floating
+    point errors). However, if the image has an odd-shape, the reconstruction will not
+    be exact due to boundary-handling issues that have not been resolved. Similarly, if
+    a complex pyramid of order=0 has non-exact reconstruction and cannot be tight-frame.
 
     The squared radial functions tile the Fourier plane with a raised-cosine
     falloff. Angular functions are cos(theta-k*pi/order+1)^(order).
@@ -52,7 +52,7 @@ class SteerablePyramidFreq(nn.Module):
         log2(min(image_shape[1], image_shape[1]))-2. If height=0, this only returns the
         residuals.
     order : `int`.
-        The Gaussian derivative order used for the steerable filters, in [1,
+        The Gaussian derivative order used for the steerable filters, in [0,
         15]. Note that to achieve steerability the minimum number of
         orientation is `order` + 1, and is used here. To get more orientations
         at the same order, use the method `steer_coeffs`
@@ -141,8 +141,14 @@ class SteerablePyramidFreq(nn.Module):
         else:
             self.num_scales = int(height)
 
-        if self.order > 15 or self.order <= 0:
-            raise ValueError("order must be an integer in the range [1,15].")
+        if self.order > 15 or self.order < 0:
+            raise ValueError("order must be an integer in the range [0, 15].")
+        if self.order == 0 and self.is_complex:
+            warnings.warn(
+                "Reconstruction will not be perfect for a complex pyramid with order=0"
+            )
+            if self.tight_frame:
+                raise ValueError("Complex pyramid with order=0 cannot be tight-frame!")
         self.num_orientations = int(self.order + 1)
 
         if twidth <= 0:
@@ -673,10 +679,11 @@ class SteerablePyramidFreq(nn.Module):
                 )
             bands: NDArray = np.array(bands, ndmin=1)
             assert (bands >= 0).all(), "Error: band numbers must be larger than 0."
-            assert (bands < self.num_orientations).all(), (
-                "Error: band numbers must be in the range [0, "
-                f"{self.num_orientations - 1:d}]"
-            )
+            if any(bands > self.num_orientations):
+                raise ValueError(
+                    "Error: band numbers must be in the range "
+                    f"[0, {self.num_orientations - 1:d}]"
+                )
         return list(bands)
 
     def _recon_keys(
@@ -724,8 +731,8 @@ class SteerablePyramidFreq(nn.Module):
                 if i >= max_orientations:
                     warnings.warn(
                         f"You wanted band {i:d} in the reconstruction but"
-                        f" max_orientation is {max_orientations:d}, so we"
-                        "'re ignoring that band"
+                        f" max_orientation is {max_orientations:d}, so "
+                        "we're ignoring that band"
                     )
             bands = [i for i in bands if i < max_orientations]
         recon_keys = []
