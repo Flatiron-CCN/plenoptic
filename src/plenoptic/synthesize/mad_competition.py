@@ -1195,8 +1195,7 @@ def animate(
         )
     if mad.mad_image.ndim not in [3, 4]:
         raise ValueError(
-            "animate() expects 3 or 4d data; unexpected"
-            " behavior will result otherwise!"
+            "animate() expects 3 or 4d data; unexpected behavior will result otherwise!"
         )
     _check_included_plots(included_plots, "included_plots")
     _check_included_plots(width_ratios, "width_ratios")

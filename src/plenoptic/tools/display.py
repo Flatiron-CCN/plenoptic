@@ -135,7 +135,7 @@ def imshow(
         if as_rgb:
             if im.shape[1] not in [3, 4]:
                 raise Exception(
-                    "If as_rgb is True, then channel must have 3 " "or 4 elements!"
+                    "If as_rgb is True, then channel must have 3 or 4 elements!"
                 )
             im = im.transpose(0, 2, 3, 1)
             # want to insert a fake "channel" dimension here, so our putting it
@@ -343,7 +343,7 @@ def animshow(
         if as_rgb:
             if vid.shape[1] not in [3, 4]:
                 raise Exception(
-                    "If as_rgb is True, then channel must have 3 " "or 4 elements!"
+                    "If as_rgb is True, then channel must have 3 or 4 elements!"
                 )
             vid = vid.transpose(0, 2, 3, 4, 1)
             # want to insert a fake "channel" dimension here, so our putting it

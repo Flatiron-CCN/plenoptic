@@ -207,9 +207,9 @@ class CenterSurround(nn.Module):
             center_std = torch.ones(out_channels) * center_std
         if isinstance(surround_std, float) or surround_std.shape == torch.Size([]):
             surround_std = torch.ones(out_channels) * surround_std
-        assert (
-            len(center_std) == out_channels and len(surround_std) == out_channels
-        ), "stds must correspond to each out_channel"
+        assert len(center_std) == out_channels and len(surround_std) == out_channels, (
+            "stds must correspond to each out_channel"
+        )
         assert amplitude_ratio >= 1.0, "ratio of amplitudes must at least be 1."
 
         self.on_center = on_center

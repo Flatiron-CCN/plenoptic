@@ -256,9 +256,9 @@ class TestFrontEnd:
             model2 = po.simul.OnOff((kernel_size, kernel_size), pretrained=True).to(
                 DEVICE
             )
-        assert torch.allclose(
-            model(einstein_img), model2(einstein_img)
-        ), "Kernels somehow different!"
+        assert torch.allclose(model(einstein_img), model2(einstein_img)), (
+            "Kernels somehow different!"
+        )
 
 
 class TestNaive:
@@ -289,9 +289,9 @@ class TestNaive:
         elif mdl == "naive.CenterSurround":
             model = po.simul.CenterSurround(kernel_size).to(DEVICE)
             model2 = po.simul.CenterSurround((kernel_size, kernel_size)).to(DEVICE)
-        assert torch.allclose(
-            model(einstein_img), model2(einstein_img)
-        ), "Kernels somehow different!"
+        assert torch.allclose(model(einstein_img), model2(einstein_img)), (
+            "Kernels somehow different!"
+        )
 
     @pytest.mark.parametrize("mdl", ["naive.Gaussian", "naive.CenterSurround"])
     @pytest.mark.parametrize("cache_filt", [False, True])
@@ -730,9 +730,9 @@ class TestPortillaSimoncelli:
             spatial_corr_width=spatial_corr_width,
         ).to(DEVICE)
         rep = ps(einstein_img)
-        assert torch.all(
-            rep == ps.convert_to_tensor(ps.convert_to_dict(rep))
-        ), "Convert to tensor or dict is broken!"
+        assert torch.all(rep == ps.convert_to_tensor(ps.convert_to_dict(rep))), (
+            "Convert to tensor or dict is broken!"
+        )
 
     def test_ps_synthesis(self, portilla_simoncelli_synthesize, run_test=True):
         """Test PS texture metamer synthesis.
@@ -850,7 +850,7 @@ class TestPortillaSimoncelli:
             expectation = pytest.raises(
                 ValueError,
                 match=(
-                    "Because of how the Portilla-Simoncelli model handles" " multiscale"
+                    "Because of how the Portilla-Simoncelli model handles multiscale"
                 ),
             )
         else:
@@ -895,7 +895,7 @@ class TestPortillaSimoncelli:
         rep = model(einstein_img.repeat((*batch_channel, 1, 1)))
         if rep.shape[:2] != batch_channel:
             raise ValueError(
-                "Output doesn't have same number of batch/channel dims as" " input!"
+                "Output doesn't have same number of batch/channel dims as input!"
             )
 
     @pytest.mark.parametrize("batch_channel", [(1, 1), (1, 3), (2, 1), (2, 3)])
@@ -1036,9 +1036,9 @@ class TestPortillaSimoncelli:
                 if red_idx.shape[-1] == 3:
                     # auto_correlation_magnitude has an extra dimension
                     # compared to the others ignore batch and channel
-                    assert (
-                        k == "auto_correlation_magnitude"
-                    ), f"Somehow got extra dimension for {k}!"
+                    assert k == "auto_correlation_magnitude", (
+                        f"Somehow got extra dimension for {k}!"
+                    )
                     # then drop the duplicates
                     red_idx = torch.unique(red_idx[..., :2], dim=0)
                 val = unp_v[0, 0, ..., sc]

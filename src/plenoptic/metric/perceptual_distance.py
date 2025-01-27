@@ -47,8 +47,7 @@ def _ssim_parts(img1, img2, pad=False):
 
     if not img1.ndim == img2.ndim == 4:
         raise Exception(
-            "Input images should have four dimensions: (batch, channel,"
-            " height, width)"
+            "Input images should have four dimensions: (batch, channel, height, width)"
         )
     if img1.shape[-2:] != img2.shape[-2:]:
         raise Exception("img1 and img2 must have the same height and width!")
@@ -455,8 +454,7 @@ def nlpd(img1, img2):
 
     if not img1.ndim == img2.ndim == 4:
         raise Exception(
-            "Input images should have four dimensions: (batch, channel,"
-            " height, width)"
+            "Input images should have four dimensions: (batch, channel, height, width)"
         )
     if img1.shape[-2:] != img2.shape[-2:]:
         raise Exception("img1 and img2 must have the same height and width!")
