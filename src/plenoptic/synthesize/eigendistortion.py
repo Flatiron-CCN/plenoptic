@@ -489,9 +489,9 @@ class Eigendistortion(Synthesis):
 
         all_idx = self.eigenindex
         assert i in all_idx, "eigenindex must be the index of one of the vectors"
-        assert (
-            all_idx is not None and len(all_idx) != 0
-        ), "No eigendistortions synthesized"
+        assert all_idx is not None and len(all_idx) != 0, (
+            "No eigendistortions synthesized"
+        )
         return int(np.where(all_idx == i)[0])
 
     def save(self, file_path: str):

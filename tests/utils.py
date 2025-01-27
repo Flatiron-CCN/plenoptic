@@ -64,8 +64,7 @@ def update_ps_synthesis_test_file(torch_version: str | None = None):
         np.testing.assert_allclose(output, im_synth.squeeze(), rtol=1e-4, atol=1e-4)
         np.testing.assert_allclose(rep, rep_synth.squeeze(), rtol=1e-4, atol=1e-4)
         print(
-            "Current synthesis same as saved version, so not saving current"
-            " synthesis."
+            "Current synthesis same as saved version, so not saving current synthesis."
         )
     # only do all this if the tests would've failed
     except AssertionError:

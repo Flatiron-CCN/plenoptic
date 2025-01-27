@@ -189,7 +189,7 @@ class Synthesis(abc.ABC):
                     "different! On two random tensors: "
                     f"Initialized: {init_loss}, Saved: "
                     f"{saved_loss}, difference: "
-                    f"{init_loss-saved_loss}"
+                    f"{init_loss - saved_loss}"
                 )
         for k, v in tmp_dict.items():
             setattr(self, k, v)

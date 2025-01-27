@@ -180,7 +180,7 @@ def validate_model(
         allowed_dtypes = [torch.float64, torch.complex128]
     else:
         raise TypeError(
-            "Only float or complex dtypes are allowed but got type" f" {image_dtype}"
+            f"Only float or complex dtypes are allowed but got type {image_dtype}"
         )
     if model(test_img).dtype not in allowed_dtypes:
         raise TypeError("model changes precision of input, don't do that!")
@@ -250,8 +250,7 @@ def validate_coarse_to_fine(
                     )
             except TypeError:
                 raise TypeError(
-                    "model forward method does not accept scales argument"
-                    f" {sc} {msg}"
+                    f"model forward method does not accept scales argument {sc} {msg}"
                 )
 
 

@@ -22,20 +22,20 @@ class TestSequences:
         stop = torch.randn(1, d).reshape(1, 1, sqrt_d, sqrt_d).to(DEVICE)
         b = po.tools.sample_brownian_bridge(start, stop, t, d**0.5)
         a, f = po.tools.deviation_from_line(b, normalize=True)
-        assert torch.abs(a[t // 2] - 0.5) < 1e-2, f"{a[t//2]}"
-        assert torch.abs(f[t // 2] - 2**0.5 / 2) < 1e-2, f"{f[t//2]}"
+        assert torch.abs(a[t // 2] - 0.5) < 1e-2, f"{a[t // 2]}"
+        assert torch.abs(f[t // 2] - 2**0.5 / 2) < 1e-2, f"{f[t // 2]}"
 
     @pytest.mark.parametrize("normalize", [True, False])
     def test_deviation_from_line_multichannel(self, normalize, einstein_img):
         einstein_img = einstein_img.repeat(1, 3, 1, 1)
         seq = po.tools.translation_sequence(einstein_img)
         dist_along, dist_from = po.tools.deviation_from_line(seq, normalize)
-        assert (
-            dist_along.shape[0] == seq.shape[0]
-        ), "Distance along line has wrong number of transitions!"
-        assert (
-            dist_from.shape[0] == seq.shape[0]
-        ), "Distance from  line has wrong number of transitions!"
+        assert dist_along.shape[0] == seq.shape[0], (
+            "Distance along line has wrong number of transitions!"
+        )
+        assert dist_from.shape[0] == seq.shape[0], (
+            "Distance from  line has wrong number of transitions!"
+        )
 
     @pytest.mark.parametrize("n_steps", [1, 10])
     @pytest.mark.parametrize("max_norm", [0, 1, 10])
@@ -125,12 +125,12 @@ class TestSequences:
             einstein_img = einstein_img.repeat(1, 3, 1, 1)
         with expectation:
             shifted = po.tools.translation_sequence(einstein_img, n_steps)
-            assert torch.equal(
-                shifted[0], einstein_img[0]
-            ), "somehow first frame changed!"
-            assert torch.equal(
-                shifted[1, 0, :, 1], shifted[0, 0, :, 0]
-            ), "wrong dimension was translated!"
+            assert torch.equal(shifted[0], einstein_img[0]), (
+                "somehow first frame changed!"
+            )
+            assert torch.equal(shifted[1, 0, :, 1], shifted[0, 0, :, 0]), (
+                "wrong dimension was translated!"
+            )
 
     @pytest.mark.parametrize(
         "func",
@@ -178,15 +178,15 @@ class TestGeodesic:
             "straight",
         )
         moog.synthesize(max_iter=5)
-        assert torch.equal(
-            moog.geodesic[0], einstein_small_seq[0]
-        ), "Somehow first endpoint changed!"
-        assert torch.equal(
-            moog.geodesic[-1], einstein_small_seq[-1]
-        ), "Somehow last endpoint changed!"
-        assert not torch.equal(
-            moog.pixelfade[1:-1], moog.geodesic[1:-1]
-        ), "Somehow middle of geodesic didn't changed!"
+        assert torch.equal(moog.geodesic[0], einstein_small_seq[0]), (
+            "Somehow first endpoint changed!"
+        )
+        assert torch.equal(moog.geodesic[-1], einstein_small_seq[-1]), (
+            "Somehow last endpoint changed!"
+        )
+        assert not torch.equal(moog.pixelfade[1:-1], moog.geodesic[1:-1]), (
+            "Somehow middle of geodesic didn't changed!"
+        )
 
     @pytest.mark.parametrize("model", ["frontend.OnOff.nograd"], indirect=True)
     @pytest.mark.parametrize(
@@ -245,9 +245,7 @@ class TestGeodesic:
                 range_penalty = 0.5
                 expectation = pytest.raises(
                     ValueError,
-                    match=(
-                        "Saved and initialized range_penalty_lambda are" " different"
-                    ),
+                    match=("Saved and initialized range_penalty_lambda are different"),
                 )
             moog_copy = po.synth.Geodesic(
                 img_a,
@@ -358,9 +356,9 @@ class TestGeodesic:
         if func == "calculate_jerkiness":
             arg_tensor.requires_grad_()
         with_arg = getattr(moog, func)(arg_tensor)
-        assert not torch.equal(
-            no_arg, with_arg
-        ), f"{func} is not using the input tensor!"
+        assert not torch.equal(no_arg, with_arg), (
+            f"{func} is not using the input tensor!"
+        )
 
     @pytest.mark.parametrize("model", ["frontend.OnOff.nograd"], indirect=True)
     def test_continue(self, einstein_small_seq, model):
@@ -390,25 +388,25 @@ class TestGeodesic:
         if store_progress == 3:
             max_iter = 6
         moog.synthesize(max_iter=max_iter, store_progress=store_progress)
-        assert len(moog.step_energy) == np.ceil(
-            max_iter / store_progress
-        ), "Didn't end up with enough step_energy after first synth!"
-        assert len(moog.dev_from_line) == np.ceil(
-            max_iter / store_progress
-        ), "Didn't end up with enough dev_from_line after first synth!"
-        assert (
-            len(moog.losses) == max_iter
-        ), "Didn't end up with enough losses after first synth!"
+        assert len(moog.step_energy) == np.ceil(max_iter / store_progress), (
+            "Didn't end up with enough step_energy after first synth!"
+        )
+        assert len(moog.dev_from_line) == np.ceil(max_iter / store_progress), (
+            "Didn't end up with enough dev_from_line after first synth!"
+        )
+        assert len(moog.losses) == max_iter, (
+            "Didn't end up with enough losses after first synth!"
+        )
         moog.synthesize(max_iter=max_iter, store_progress=store_progress)
-        assert len(moog.step_energy) == np.ceil(
-            2 * max_iter / store_progress
-        ), "Didn't end up with enough step_energy after second synth!"
-        assert len(moog.dev_from_line) == np.ceil(
-            2 * max_iter / store_progress
-        ), "Didn't end up with enough dev_from_line after second synth!"
-        assert (
-            len(moog.losses) == 2 * max_iter
-        ), "Didn't end up with enough losses after second synth!"
+        assert len(moog.step_energy) == np.ceil(2 * max_iter / store_progress), (
+            "Didn't end up with enough step_energy after second synth!"
+        )
+        assert len(moog.dev_from_line) == np.ceil(2 * max_iter / store_progress), (
+            "Didn't end up with enough dev_from_line after second synth!"
+        )
+        assert len(moog.losses) == 2 * max_iter, (
+            "Didn't end up with enough losses after second synth!"
+        )
 
     @pytest.mark.parametrize("model", ["frontend.OnOff.nograd"], indirect=True)
     def test_stop_criterion(self, einstein_small_seq, model):
@@ -419,9 +417,9 @@ class TestGeodesic:
             einstein_small_seq[:1], einstein_small_seq[-1:], model, 5
         )
         moog.synthesize(max_iter=10, stop_criterion=0.06, stop_iters_to_check=1)
-        assert (
-            abs(moog.pixel_change_norm[-1:]) < 0.06
-        ).all(), "Didn't stop when hit criterion!"
-        assert (
-            abs(moog.pixel_change_norm[:-1]) > 0.06
-        ).all(), "Stopped after hit criterion!"
+        assert (abs(moog.pixel_change_norm[-1:]) < 0.06).all(), (
+            "Didn't stop when hit criterion!"
+        )
+        assert (abs(moog.pixel_change_norm[:-1]) > 0.06).all(), (
+            "Stopped after hit criterion!"
+        )
